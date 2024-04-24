@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({Key? key});
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,6 +13,18 @@ class LoginScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              TextFormField(
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue.shade300),
+                  ),
+                  labelText: 'E-mail',
+                  labelStyle: const TextStyle(color: Colors.grey),
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              
             ],
           ),
         ),
