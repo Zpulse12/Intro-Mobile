@@ -31,9 +31,10 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   List<String> days = [];
 
   Widget buildChoiceChip(String label, String value, String groupValue) {
+    bool isSelected = groupValue == value;
     return ChoiceChip(
       label: Text(label),
-      selected: groupValue == value,
+      selected: isSelected,
       onSelected: (bool selected) {
         setState(() {
           if (selected) {
@@ -66,10 +67,10 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       },
       showCheckmark: false,
       selectedColor: Colors.blue,
-      backgroundColor: Colors.grey.shade200,
+      backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: Colors.blue),
+        side: BorderSide(color: isSelected ? Colors.blue : Colors.black),
       ),
     );
   }
@@ -80,54 +81,60 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       appBar: AppBar(
         title: Text('Player Preferences'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             buildPreferenceTitle('Best Hand'),
+            SizedBox(height: 8),
             buildToggleGroup(
               ['Right-Handed', 'Left-Handed', 'Both Hands'],
               bestHand,
               (value) => setState(() => bestHand = value),
             ),
+            SizedBox(height: 24),
             buildPreferenceTitle('Court Side'),
+            SizedBox(height: 8),
             buildToggleGroup(
               ['Backhand', 'Forehand', 'Both Sides'],
               courtSide,
               (value) => setState(() => courtSide = value),
             ),
+            SizedBox(height: 24),
             buildPreferenceTitle('Match Type'),
+            SizedBox(height: 8),
             buildToggleGroup(
               ['Competitive', 'Friendly', 'Both'],
               matchType,
               (value) => setState(() => matchType = value),
             ),
+            SizedBox(height: 24),
             buildPreferenceTitle('My Preferred Time to Play'),
-            SwitchListTile(
-              title: Text('Set by Time Frame'),
-              value: setTimeFrame,
-              onChanged: (bool value) {
-                setState(() {
-                  setTimeFrame = value;
-                });
-              },
+            SizedBox(height: 8),
+            buildSwitchTile(
+              'Set by Time Frame',
+              setTimeFrame,
+              (bool value) => setState(() => setTimeFrame = value),
             ),
-            if (setTimeFrame)
+            if (setTimeFrame) ...[
+              SizedBox(height: 8),
               buildToggleGroup(
                 ['Morning', 'Afternoon', 'Evening', 'All day'],
                 preferredTime,
                 (value) => setState(() => preferredTime = value),
               ),
-            SwitchListTile(
-              title: Text('Set by Days'),
-              value: setDays,
-              onChanged: (bool value) {
-                setState(() {
-                  setDays = value;
-                });
-              },
+            ],
+            SizedBox(height: 24),
+            buildSwitchTile(
+              'Set by Days',
+              setDays,
+              (bool value) => setState(() => setDays = value),
             ),
-            if (setDays) buildDaysSelection(),
+            if (setDays) ...[
+              SizedBox(height: 8),
+              buildDaysSelection(),
+            ],
           ],
         ),
       ),
@@ -136,7 +143,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
 
   Padding buildPreferenceTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Text(
         title,
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -148,6 +155,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       List<String> labels, String groupValue, Function(String) onChanged) {
     return Wrap(
       spacing: 8.0,
+      runSpacing: 8.0, // Additional spacing between rows
       children: labels.map((label) {
         return buildChoiceChip(label, label, groupValue);
       }).toList(),
@@ -157,13 +165,15 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   Wrap buildDaysSelection() {
     return Wrap(
       spacing: 8.0,
+      runSpacing: 8.0,
       children: List<Widget>.generate(
         7,
         (int index) {
           final day = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][index];
+          bool isSelected = days.contains(day);
           return FilterChip(
             label: Text(day),
-            selected: days.contains(day),
+            selected: isSelected,
             onSelected: (bool selected) {
               setState(() {
                 if (selected) {
@@ -175,13 +185,24 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             },
             showCheckmark: false,
             selectedColor: Colors.blue,
-            backgroundColor: Colors.grey.shade200,
+            backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
+              side: BorderSide(color: isSelected ? Colors.blue : Colors.black),
             ),
           );
         },
       ),
+    );
+  }
+
+  SwitchListTile buildSwitchTile(
+      String title, bool value, Function(bool) onChanged) {
+    return SwitchListTile(
+      title: Text(title),
+      value: value,
+      onChanged: onChanged,
+      activeColor: Colors.blue,
     );
   }
 }
