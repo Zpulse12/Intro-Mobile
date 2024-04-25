@@ -96,6 +96,37 @@ class _RegisterPageState extends State<RegisterPage> {
                   return null;
                 },
               ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.disabled)) {
+                        return Colors.grey; // Disabled color
+                      }
+                      return isFormFilled
+                          ? Colors.blue
+                          : Colors.grey; // Regular color
+                    },
+                  ),
+                  foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.disabled)) {
+                        return Colors.black; // Disabled text color
+                      }
+                      return Colors.white; // Regular text color
+                    },
+                  ),
+                ),
+                onPressed: isFormFilled
+                    ? () {
+                        if (_formKey.currentState!.validate()) {
+                          // Registration moet nog worden geïmplementeerd
+                        }
+                      }
+                    : null,
+                child: Text('Create an account'),
+              ),
             ],
           ),
         ),
