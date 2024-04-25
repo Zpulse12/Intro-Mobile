@@ -41,4 +41,34 @@ class _RegisterPageState extends State<RegisterPage> {
       _emailController.text.isNotEmpty &&
       _phoneController.text.isNotEmpty &&
       _passwordController.text.isNotEmpty;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Sign up'),
+      ),
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(labelText: 'Name and last name'),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your name and last name';
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
