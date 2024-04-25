@@ -7,9 +7,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Register Page',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
       home: RegisterPage(),
     );
   }
@@ -26,6 +23,36 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
+  String _passwordError = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _passwordController.addListener(_updatePasswordError);
+  }
+
+  void _updatePasswordError() {
+    String newError = '';
+    if (_passwordController.text.isEmpty) {
+      newError = 'Please enter your password.';
+    } else {
+      if (_passwordController.text.length < 8) {
+        newError += 'Password needs at least 8 characters.\n';
+      }
+      if (!RegExp(r'[A-Z]').hasMatch(_passwordController.text)) {
+        newError += 'Password needs a capital letter.\n';
+      }
+      if (!RegExp(r'[0-9]').hasMatch(_passwordController.text)) {
+        newError += 'Password needs 1 number.\n';
+      }
+    }
+
+    if (newError != _passwordError) {
+      setState(() {
+        _passwordError = newError.trim();
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -41,6 +68,8 @@ class _RegisterPageState extends State<RegisterPage> {
       _emailController.text.isNotEmpty &&
       _phoneController.text.isNotEmpty &&
       _passwordController.text.isNotEmpty;
+
+  bool get isPasswordValid => _passwordError.isEmpty;
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +88,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 controller: _nameController,
                 decoration: InputDecoration(labelText: 'Name and last name'),
                 validator: (value) {
-                  if (value!.isEmpty) {
+                  if (value!.isEmpty)
                     return 'Please enter your name and last name';
-                  }
                   return null;
                 },
               ),
@@ -69,9 +97,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 controller: _emailController,
                 decoration: InputDecoration(labelText: 'Email'),
                 validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter your email';
-                  }
+                  if (value!.isEmpty) return 'Please enter your email';
                   return null;
                 },
               ),
@@ -79,46 +105,34 @@ class _RegisterPageState extends State<RegisterPage> {
                 controller: _phoneController,
                 decoration: InputDecoration(labelText: 'Mobile'),
                 validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter your phone number';
-                  }
+                  if (value!.isEmpty) return 'Please enter your phone number';
                   return null;
                 },
               ),
               TextFormField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration: InputDecoration(labelText: 'Password'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  return null;
-                },
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  errorText: _passwordError.isEmpty ? null : _passwordError,
+                  errorMaxLines: 3,
+                ),
               ),
               SizedBox(height: 20),
               ElevatedButton(
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.resolveWith<Color>(
                     (Set<MaterialState> states) {
-                      if (states.contains(MaterialState.disabled)) {
-                        return Colors.grey; // Disabled color
+                      if (!isFormFilled || !isPasswordValid) {
+                        return Colors.grey;
                       }
-                      return isFormFilled
-                          ? Colors.blue
-                          : Colors.grey; // Regular color
+                      return Colors.blue;
                     },
                   ),
-                  foregroundColor: MaterialStateProperty.resolveWith<Color>(
-                    (Set<MaterialState> states) {
-                      if (states.contains(MaterialState.disabled)) {
-                        return Colors.black; // Disabled text color
-                      }
-                      return Colors.white; // Regular text color
-                    },
-                  ),
+                  foregroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
                 ),
-                onPressed: isFormFilled
+                onPressed: (isFormFilled && isPasswordValid)
                     ? () {
                         if (_formKey.currentState!.validate()) {
                           // Registration moet nog worden geïmplementeerd
