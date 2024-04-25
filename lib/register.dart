@@ -14,3 +14,8 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+class RegisterPage extends StatefulWidget {
+  @override
+  _RegisterPageState createState() => _RegisterPageState();
+}
