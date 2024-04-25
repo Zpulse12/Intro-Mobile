@@ -65,6 +65,37 @@ class _RegisterPageState extends State<RegisterPage> {
                   return null;
                 },
               ),
+              TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(labelText: 'Email'),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _phoneController,
+                decoration: InputDecoration(labelText: 'Mobile'),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your phone number';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: InputDecoration(labelText: 'Password'),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your password';
+                  }
+                  return null;
+                },
+              ),
             ],
           ),
         ),
