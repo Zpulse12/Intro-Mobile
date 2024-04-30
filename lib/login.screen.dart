@@ -1,7 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  LoginScreen({super.key});
+
+  Future<void> _login(BuildContext context) async {
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      Navigator.of(context)
+          .pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to log in: ${e.toString()}")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +34,7 @@ class LoginScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               TextFormField(
+                controller: _emailController,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   enabledBorder: UnderlineInputBorder(
@@ -26,6 +47,7 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8.0),
               TextFormField(
+                controller: _passwordController,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   enabledBorder: UnderlineInputBorder(
@@ -40,16 +62,16 @@ class LoginScreen extends StatelessWidget {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor:
-                      Colors.blue.shade300,
+                  backgroundColor: Colors.blue.shade300,
                   minimumSize: const Size(double.infinity, 50),
                 ),
-                onPressed: () {
-                },
+                onPressed: () => _login(context),
                 child: const Text('Log in'),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Add functionality for password reset if needed
+                },
                 child: const Text(
                   'Have you forgotten your password?',
                   style: TextStyle(color: Colors.grey),
@@ -60,5 +82,16 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(title: const Text("Home")),
+        body: const Center(child: Text("Welcome Home!")));
   }
 }

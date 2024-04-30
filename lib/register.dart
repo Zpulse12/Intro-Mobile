@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Register Page',
       home: RegisterPage(),
     );
@@ -13,6 +15,8 @@ class MyApp extends StatelessWidget {
 }
 
 class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
+
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
@@ -75,27 +79,28 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sign up'),
+        title: const Text('Sign up'),
       ),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Name and last name'),
+                decoration: const InputDecoration(labelText: 'Name and last name'),
                 validator: (value) {
-                  if (value!.isEmpty)
+                  if (value!.isEmpty) {
                     return 'Please enter your name and last name';
+                  }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: const InputDecoration(labelText: 'Email'),
                 validator: (value) {
                   if (value!.isEmpty) return 'Please enter your email';
                   return null;
@@ -103,7 +108,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               TextFormField(
                 controller: _phoneController,
-                decoration: InputDecoration(labelText: 'Mobile'),
+                decoration: const InputDecoration(labelText: 'Mobile'),
                 validator: (value) {
                   if (value!.isEmpty) return 'Please enter your phone number';
                   return null;
@@ -118,7 +123,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   errorMaxLines: 3,
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.resolveWith<Color>(
@@ -139,7 +144,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         }
                       }
                     : null,
-                child: Text('Create an account'),
+                child: const Text('Create an account'),
               ),
             ],
           ),
