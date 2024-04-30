@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -11,12 +13,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: PreferencesScreen(),
+      home: const PreferencesScreen(),
     );
   }
 }
 
 class PreferencesScreen extends StatefulWidget {
+  const PreferencesScreen({super.key});
+
   @override
   _PreferencesScreenState createState() => _PreferencesScreenState();
 }
@@ -79,7 +83,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Player Preferences'),
+        title: const Text('Player Preferences'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
@@ -87,52 +91,52 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             buildPreferenceTitle('Best Hand'),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             buildToggleGroup(
               ['Right-Handed', 'Left-Handed', 'Both Hands'],
               bestHand,
               (value) => setState(() => bestHand = value),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             buildPreferenceTitle('Court Side'),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             buildToggleGroup(
               ['Backhand', 'Forehand', 'Both Sides'],
               courtSide,
               (value) => setState(() => courtSide = value),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             buildPreferenceTitle('Match Type'),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             buildToggleGroup(
               ['Competitive', 'Friendly', 'Both'],
               matchType,
               (value) => setState(() => matchType = value),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             buildPreferenceTitle('My Preferred Time to Play'),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             buildSwitchTile(
               'Set by Time Frame',
               setTimeFrame,
               (bool value) => setState(() => setTimeFrame = value),
             ),
             if (setTimeFrame) ...[
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               buildToggleGroup(
                 ['Morning', 'Afternoon', 'Evening', 'All day'],
                 preferredTime,
                 (value) => setState(() => preferredTime = value),
               ),
             ],
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             buildSwitchTile(
               'Set by Days',
               setDays,
               (bool value) => setState(() => setDays = value),
             ),
             if (setDays) ...[
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               buildDaysSelection(),
             ],
           ],
@@ -146,7 +150,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Text(
         title,
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
     );
   }
