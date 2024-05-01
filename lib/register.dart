@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -75,6 +81,31 @@ class _RegisterPageState extends State<RegisterPage> {
 
   bool get isPasswordValid => _passwordError.isEmpty;
 
+  final FirebaseAuth _auth =
+      FirebaseAuth.instance; // Firebase Authentication instance
+
+  Future<void> _register() async {
+    try {
+      final UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      await userCredential.user!
+          .updateProfile(displayName: _nameController.text);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                "Registration successful! Welcome, ${userCredential.user!.displayName}")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to register: $e")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,7 +121,8 @@ class _RegisterPageState extends State<RegisterPage> {
             children: <Widget>[
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name and last name'),
+                decoration:
+                    const InputDecoration(labelText: 'Name and last name'),
                 validator: (value) {
                   if (value!.isEmpty) {
                     return 'Please enter your name and last name';
@@ -140,7 +172,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 onPressed: (isFormFilled && isPasswordValid)
                     ? () {
                         if (_formKey.currentState!.validate()) {
-                          // Registration moet nog worden geïmplementeerd
+                          _register();
                         }
                       }
                     : null,
