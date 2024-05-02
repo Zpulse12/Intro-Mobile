@@ -42,7 +42,7 @@ class LoginScreen extends StatelessWidget {
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
                           builder: (_) =>
-                              WelcomePage()), // Navigate back to WelcomePage
+                              WelcomePage()), 
                       (Route<dynamic> route) => false,
                     );
                   },

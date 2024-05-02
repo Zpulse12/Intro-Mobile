@@ -123,9 +123,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   icon: Icon(Icons.arrow_back, color: Colors.black),
                   onPressed: () {
                     Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                          builder: (_) =>
-                              WelcomePage()), // Navigate back to WelcomePage
+                      MaterialPageRoute(builder: (_) => WelcomePage()),
                       (Route<dynamic> route) => false,
                     );
                   },
@@ -152,7 +150,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               TextFormField(
                 controller: _phoneController,
-                decoration: const InputDecoration(labelText: 'Mobile'),
+                decoration: const InputDecoration(labelText: 'Phone number'),
                 validator: (value) {
                   if (value!.isEmpty) return 'Please enter your phone number';
                   return null;
