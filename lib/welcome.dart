@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(MyApp());
-}
+import 'login.screen.dart'; 
+import 'register.dart'; 
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: LoginPage(),
+      home: WelcomePage(),
     );
   }
 }
 
-class LoginPage extends StatelessWidget {
+class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +57,9 @@ class LoginPage extends StatelessWidget {
               SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
-                  // Register page routing to be added
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => RegisterPage()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
@@ -71,7 +71,9 @@ class LoginPage extends StatelessWidget {
               SizedBox(height: 20),
               OutlinedButton(
                 onPressed: () {
-                  // Login page routing to be added
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => LoginScreen()),
+                  );
                 },
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: Colors.white),

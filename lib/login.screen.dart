@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'welcome.dart';
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
@@ -14,8 +15,8 @@ class LoginScreen extends StatelessWidget {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-      Navigator.of(context)
-          .pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to log in: ${e.toString()}")),
@@ -33,6 +34,20 @@ class LoginScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  icon: Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                          builder: (_) =>
+                              WelcomePage()), // Navigate back to WelcomePage
+                      (Route<dynamic> route) => false,
+                    );
+                  },
+                ),
+              ),
               TextFormField(
                 controller: _emailController,
                 style: const TextStyle(color: Colors.white),

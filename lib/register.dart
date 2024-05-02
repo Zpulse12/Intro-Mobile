@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'welcome.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -109,9 +110,6 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sign up'),
-      ),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -119,6 +117,20 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
+              Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  icon: Icon(Icons.arrow_back, color: Colors.black),
+                  onPressed: () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                          builder: (_) =>
+                              WelcomePage()), // Navigate back to WelcomePage
+                      (Route<dynamic> route) => false,
+                    );
+                  },
+                ),
+              ),
               TextFormField(
                 controller: _nameController,
                 decoration:
