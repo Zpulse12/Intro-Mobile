@@ -19,8 +19,30 @@ class MatchScreen extends StatefulWidget {
 class _MatchScreenState extends State<MatchScreen> {
   List<String> selectedPlaces = [];
   DateTimeRange? selectedDateRange;
-  List<String> times = ["All day", "Morning", "Afternoon", "Evening"];
   String? selectedTime;
+
+  Map<String, List<String>> matchTimes = {
+    "All day": [
+      "08:00",
+      "09:00",
+      "09:30",
+      "10:00",
+      "11:00",
+      "12:00",
+      "14:00",
+      "15:00",
+      "16:00",
+      "17:00",
+      "18:00",
+      "19:00",
+      "20:00",
+      "21:00",
+      "22:00"
+    ],
+    "Morning": ["08:00", "09:00", "09:30", "10:00", "11:00", "12:00"],
+    "Afternoon": ["12:30", "13:00", "14:00", "15:00", "16:00", "17:00"],
+    "Evening": ["17:30", "18:00", "19:00", "20:00", "21:00", "22:00"]
+  };
 
   void _openFilterDialog() {
     showDialog(
@@ -43,6 +65,11 @@ class _MatchScreenState extends State<MatchScreen> {
     );
   }
 
+  void _onTimeSlotSelected(String place, String time) {
+    // Navigate to the next screen (to be implemented later)
+    print("Selected Place: $place, Time: $time");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,13 +84,48 @@ class _MatchScreenState extends State<MatchScreen> {
             style: TextStyle(fontSize: 16),
           ),
           Expanded(
-            child: Center(
-              child: Text(
-                'No matches available.\nApply filters to see available matches.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
+            child: selectedPlaces.isEmpty
+                ? Center(
+                    child: Text(
+                      'No matches available.\nApply filters to see available matches.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: selectedPlaces.length,
+                    itemBuilder: (context, index) {
+                      final place = selectedPlaces[index];
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          child: ListTile(
+                            title: Text(place),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (selectedDateRange != null)
+                                  Text(
+                                      'Dates: ${selectedDateRange!.start.toLocal().toShortString()} - ${selectedDateRange!.end.toLocal().toShortString()}'),
+                                Text('Times:'),
+                                Wrap(
+                                  spacing: 8.0,
+                                  runSpacing: 4.0,
+                                  children: _getMatchTimes().map((time) {
+                                    return ElevatedButton(
+                                      onPressed: () =>
+                                          _onTimeSlotSelected(place, time),
+                                      child: Text(time),
+                                    );
+                                  }).toList(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -75,6 +137,13 @@ class _MatchScreenState extends State<MatchScreen> {
         ],
       ),
     );
+  }
+
+  List<String> _getMatchTimes() {
+    if (selectedTime == null || !matchTimes.containsKey(selectedTime)) {
+      return [];
+    }
+    return matchTimes[selectedTime]!;
   }
 }
 
@@ -186,7 +255,7 @@ class _FilterDialogState extends State<FilterDialog> {
                         onPressed: _selectDateRange,
                         child: Text(selectedDateRange == null
                             ? 'Select Date Range'
-                            : '${selectedDateRange!.start.toLocal()} - ${selectedDateRange!.end.toLocal()}'),
+                            : '${selectedDateRange!.start.toLocal().toShortString()} - ${selectedDateRange!.end.toLocal().toShortString()}'),
                       ),
                     ),
                   ],
@@ -224,5 +293,11 @@ class _FilterDialogState extends State<FilterDialog> {
         ],
       ),
     );
+  }
+}
+
+extension DateTimeExtension on DateTime {
+  String toShortString() {
+    return "${this.day}/${this.month}/${this.year}";
   }
 }
