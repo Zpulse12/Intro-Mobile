@@ -18,7 +18,7 @@ class MatchScreen extends StatefulWidget {
 
 class _MatchScreenState extends State<MatchScreen> {
   List<String> selectedPlaces = [];
-  DateTimeRange? selectedDateRange;
+  List<DateTime> selectedDates = [];
   String? selectedTime;
 
   Map<String, List<String>> matchTimes = {
@@ -50,12 +50,12 @@ class _MatchScreenState extends State<MatchScreen> {
       builder: (BuildContext context) {
         return FilterDialog(
           selectedPlaces: selectedPlaces,
-          selectedDateRange: selectedDateRange,
+          selectedDates: selectedDates,
           selectedTime: selectedTime,
-          onApply: (places, dateRange, time) {
+          onApply: (places, dates, time) {
             setState(() {
               selectedPlaces = places;
-              selectedDateRange = dateRange;
+              selectedDates = dates;
               selectedTime = time;
             });
             Navigator.of(context).pop();
@@ -65,9 +65,9 @@ class _MatchScreenState extends State<MatchScreen> {
     );
   }
 
-  void _onTimeSlotSelected(String place, String time) {
+  void _onTimeSlotSelected(String place, String date, String time) {
     // Navigate to the next screen (to be implemented later)
-    print("Selected Place: $place, Time: $time");
+    print("Selected Place: $place, Date: $date, Time: $time");
   }
 
   @override
@@ -94,33 +94,37 @@ class _MatchScreenState extends State<MatchScreen> {
                   )
                 : ListView.builder(
                     itemCount: selectedPlaces.length,
-                    itemBuilder: (context, index) {
-                      final place = selectedPlaces[index];
+                    itemBuilder: (context, placeIndex) {
+                      final place = selectedPlaces[placeIndex];
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Card(
-                          child: ListTile(
+                          child: ExpansionTile(
                             title: Text(place),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (selectedDateRange != null)
-                                  Text(
-                                      'Dates: ${selectedDateRange!.start.toLocal().toShortString()} - ${selectedDateRange!.end.toLocal().toShortString()}'),
-                                Text('Times:'),
-                                Wrap(
-                                  spacing: 8.0,
-                                  runSpacing: 4.0,
-                                  children: _getMatchTimes().map((time) {
-                                    return ElevatedButton(
-                                      onPressed: () =>
-                                          _onTimeSlotSelected(place, time),
-                                      child: Text(time),
-                                    );
-                                  }).toList(),
+                            children: selectedDates.map((date) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Date: ${date.toShortString()}'),
+                                    Wrap(
+                                      spacing: 8.0,
+                                      runSpacing: 4.0,
+                                      children: _getMatchTimes().map((time) {
+                                        return ElevatedButton(
+                                          onPressed: () => _onTimeSlotSelected(
+                                              place,
+                                              date.toShortString(),
+                                              time),
+                                          child: Text(time),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              );
+                            }).toList(),
                           ),
                         ),
                       );
@@ -149,13 +153,13 @@ class _MatchScreenState extends State<MatchScreen> {
 
 class FilterDialog extends StatefulWidget {
   final List<String> selectedPlaces;
-  final DateTimeRange? selectedDateRange;
+  final List<DateTime> selectedDates;
   final String? selectedTime;
-  final Function(List<String>, DateTimeRange?, String?) onApply;
+  final Function(List<String>, List<DateTime>, String?) onApply;
 
   FilterDialog({
     required this.selectedPlaces,
-    required this.selectedDateRange,
+    required this.selectedDates,
     required this.selectedTime,
     required this.onApply,
   });
@@ -170,10 +174,10 @@ class _FilterDialogState extends State<FilterDialog> {
     'Pacma (Maaseik)',
     'Ter Eiken (Edegem)',
     'Garrincha (Hoboken)',
-    'Antwerp Padelclub (Berchem)'
+    'Antwerp Padelclub (Berchem)',
   ];
   List<String> selectedPlaces = [];
-  DateTimeRange? selectedDateRange;
+  List<DateTime> selectedDates = [];
   List<String> times = ["All day", "Morning", "Afternoon", "Evening"];
   String? selectedTime;
 
@@ -181,19 +185,20 @@ class _FilterDialogState extends State<FilterDialog> {
   void initState() {
     super.initState();
     selectedPlaces = widget.selectedPlaces;
-    selectedDateRange = widget.selectedDateRange;
+    selectedDates = widget.selectedDates;
     selectedTime = widget.selectedTime;
   }
 
-  void _selectDateRange() async {
-    DateTimeRange? picked = await showDateRangePicker(
+  void _selectDate() async {
+    DateTime? picked = await showDatePicker(
       context: context,
+      initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2025),
     );
-    if (picked != null) {
+    if (picked != null && !selectedDates.contains(picked)) {
       setState(() {
-        selectedDateRange = picked;
+        selectedDates.add(picked);
       });
     }
   }
@@ -245,20 +250,33 @@ class _FilterDialogState extends State<FilterDialog> {
                   }).toList(),
                 ),
                 SizedBox(height: 16),
-                Text('Choose your days (max. 7)',
+                Text('Choose your days',
                     style:
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 Row(
                   children: [
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: _selectDateRange,
-                        child: Text(selectedDateRange == null
-                            ? 'Select Date Range'
-                            : '${selectedDateRange!.start.toLocal().toShortString()} - ${selectedDateRange!.end.toLocal().toShortString()}'),
+                        onPressed: _selectDate,
+                        child: Text(selectedDates.isEmpty
+                            ? 'Select Dates'
+                            : 'Selected ${selectedDates.length} Dates'),
                       ),
                     ),
                   ],
+                ),
+                Wrap(
+                  spacing: 8.0,
+                  children: selectedDates.map((date) {
+                    return Chip(
+                      label: Text(date.toShortString()),
+                      onDeleted: () {
+                        setState(() {
+                          selectedDates.remove(date);
+                        });
+                      },
+                    );
+                  }).toList(),
                 ),
                 SizedBox(height: 16),
                 Text('Pick your time',
@@ -285,7 +303,7 @@ class _FilterDialogState extends State<FilterDialog> {
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(
               onPressed: () {
-                widget.onApply(selectedPlaces, selectedDateRange, selectedTime);
+                widget.onApply(selectedPlaces, selectedDates, selectedTime);
               },
               child: Text('Apply Filters'),
             ),
