@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'home_screen.dart';
 import 'welcome.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -37,12 +38,12 @@ class LoginScreen extends StatelessWidget {
               Align(
                 alignment: Alignment.topLeft,
                 child: IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.white),
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
                   onPressed: () {
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
                           builder: (_) =>
-                              WelcomePage()), // Navigate back to WelcomePage
+                              const WelcomePage()), // Navigate back to WelcomePage
                       (Route<dynamic> route) => false,
                     );
                   },
@@ -97,16 +98,5 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text("Home")),
-        body: const Center(child: Text("Welcome Home!")));
   }
 }
