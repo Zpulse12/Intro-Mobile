@@ -120,12 +120,12 @@ class _RegisterPageState extends State<RegisterPage> {
               Align(
                 alignment: Alignment.topLeft,
                 child: IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.black),
+                  icon: const Icon(Icons.arrow_back, color: Colors.black),
                   onPressed: () {
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
                           builder: (_) =>
-                              WelcomePage()), // Navigate back to WelcomePage
+                              const WelcomePage()), // Navigate back to WelcomePage
                       (Route<dynamic> route) => false,
                     );
                   },

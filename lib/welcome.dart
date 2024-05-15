@@ -3,20 +3,24 @@ import 'login.screen.dart';
 import 'register.dart'; 
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: WelcomePage(),
     );
   }
 }
 
 class WelcomePage extends StatelessWidget {
+  const WelcomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/welcome-background.jpg'),
             fit: BoxFit.cover,
@@ -33,10 +37,10 @@ class WelcomePage extends StatelessWidget {
                 'assets/logo_transparent_text.jpg',
                 width: 350.0,
               ),
-              SizedBox(height: 20),
-              Container(
+              const SizedBox(height: 20),
+              SizedBox(
                 width: MediaQuery.of(context).size.width * 0.6,
-                child: Text(
+                child: const Text(
                   'Join the biggest racket sports players community',
                   style: TextStyle(
                     color: Colors.white,
@@ -46,29 +50,29 @@ class WelcomePage extends StatelessWidget {
                   maxLines: 5,
                 ),
               ),
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'And find your perfect match',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => RegisterPage()),
+                    MaterialPageRoute(builder: (_) => const RegisterPage()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,
-                  minimumSize: Size(double.infinity, 50),
+                  minimumSize: const Size(double.infinity, 50),
                 ),
-                child: Text('Register'),
+                child: const Text('Register'),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               OutlinedButton(
                 onPressed: () {
                   Navigator.of(context).push(
@@ -76,15 +80,15 @@ class WelcomePage extends StatelessWidget {
                   );
                 },
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Colors.white),
+                  side: const BorderSide(color: Colors.white),
                   foregroundColor: Colors.white,
-                  minimumSize: Size(double.infinity, 50),
+                  minimumSize: const Size(double.infinity, 50),
                 ),
-                child: Text('Log in'),
+                child: const Text('Log in'),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               RichText(
-                text: TextSpan(
+                text: const TextSpan(
                   text: 'By registering you are accepting our ',
                   style: TextStyle(color: Colors.white),
                   children: <TextSpan>[
