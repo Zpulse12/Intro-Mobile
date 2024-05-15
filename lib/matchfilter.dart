@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -10,12 +12,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MatchScreen(),
+      home: const MatchScreen(),
     );
   }
 }
 
 class MatchScreen extends StatefulWidget {
+  const MatchScreen({super.key});
+
   @override
   _MatchScreenState createState() => _MatchScreenState();
 }
@@ -119,16 +123,16 @@ class _MatchScreenState extends State<MatchScreen> {
         selectedTime != null;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Matches'),
+        title: const Text('Matches'),
       ),
       body: Column(
         children: [
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
               allFiltersApplied ? 'Here are all the available matches:' : '',
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.black),
@@ -154,7 +158,7 @@ class _MatchScreenState extends State<MatchScreen> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
                                   place,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold),
                                 ),
@@ -178,12 +182,12 @@ class _MatchScreenState extends State<MatchScreen> {
                                       children: [
                                         Text(
                                           'Date: ${date.toShortString()}',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
                                               color: Colors.black),
                                         ),
-                                        SizedBox(height: 8),
+                                        const SizedBox(height: 8),
                                         Wrap(
                                           spacing: 8.0,
                                           runSpacing: 4.0,
@@ -214,7 +218,7 @@ class _MatchScreenState extends State<MatchScreen> {
                       );
                     },
                   )
-                : Center(
+                : const Center(
                     child: Text(
                       'No matches available.\nApply filters to see available matches.',
                       textAlign: TextAlign.center,
@@ -228,10 +232,10 @@ class _MatchScreenState extends State<MatchScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               ),
               onPressed: _openFilterDialog,
-              child: Text(
+              child: const Text(
                 'Start a match',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
@@ -251,7 +255,7 @@ class FilterDialog extends StatefulWidget {
   final List<String> selectedHours;
   final Function(List<String>, List<DateTime>, String?, List<String>) onApply;
 
-  FilterDialog({
+  const FilterDialog({super.key, 
     required this.matchTimes,
     required this.selectedPlaces,
     required this.selectedDates,
@@ -347,27 +351,27 @@ class _FilterDialogState extends State<FilterDialog> {
         children: [
           AppBar(
             title:
-                Text('Find new matches', style: TextStyle(color: Colors.white)),
+                const Text('Find new matches', style: TextStyle(color: Colors.white)),
             automaticallyImplyLeading: false,
             backgroundColor: Colors.blue,
             elevation: 0,
             actions: [
               IconButton(
-                icon: Icon(Icons.close, color: Colors.white),
+                icon: const Icon(Icons.close, color: Colors.white),
                 onPressed: () => Navigator.of(context).pop(),
               )
             ],
           ),
           Expanded(
             child: ListView(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               children: [
-                Text('Where do you want to play?',
+                const Text('Where do you want to play?',
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.black)),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Wrap(
                   spacing: 8.0,
                   runSpacing: 4.0,
@@ -389,26 +393,26 @@ class _FilterDialogState extends State<FilterDialog> {
                     );
                   }).toList(),
                 ),
-                SizedBox(height: 16),
-                Text('Choose your days',
+                const SizedBox(height: 16),
+                const Text('Choose your days',
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.black)),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     Expanded(
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Colors.blue),
+                          side: const BorderSide(color: Colors.blue),
                         ),
                         onPressed: _selectDate,
                         child: Text(
                           selectedDates.isEmpty
                               ? 'Select Dates'
                               : 'Selected ${selectedDates.length} Dates',
-                          style: TextStyle(color: Colors.blue),
+                          style: const TextStyle(color: Colors.blue),
                         ),
                       ),
                     ),
@@ -419,7 +423,7 @@ class _FilterDialogState extends State<FilterDialog> {
                   children: selectedDates.map((date) {
                     return Chip(
                       label: Text(date.toShortString(),
-                          style: TextStyle(color: Colors.white)),
+                          style: const TextStyle(color: Colors.white)),
                       backgroundColor: Colors.blue,
                       onDeleted: () {
                         setState(() {
@@ -429,13 +433,13 @@ class _FilterDialogState extends State<FilterDialog> {
                     );
                   }).toList(),
                 ),
-                SizedBox(height: 16),
-                Text('Pick up your time',
+                const SizedBox(height: 16),
+                const Text('Pick up your time',
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.black)),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Wrap(
                   spacing: 8.0,
                   runSpacing: 4.0,
@@ -463,13 +467,13 @@ class _FilterDialogState extends State<FilterDialog> {
                   }).toList(),
                 ),
                 if (selectedTime != null) ...[
-                  SizedBox(height: 16),
-                  Text('Select Specific Hours (optional, max 6)',
+                  const SizedBox(height: 16),
+                  const Text('Select Specific Hours (optional, max 6)',
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.black)),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Wrap(
                     spacing: 8.0,
                     runSpacing: 4.0,
@@ -497,13 +501,13 @@ class _FilterDialogState extends State<FilterDialog> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: allFiltersSelected ? Colors.blue : Colors.grey,
                 foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               ),
               onPressed: allFiltersSelected
                   ? () => widget.onApply(selectedPlaces, selectedDates,
                       selectedTime, selectedHours)
                   : null,
-              child: Text(
+              child: const Text(
                 'Apply Filters',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
@@ -517,7 +521,7 @@ class _FilterDialogState extends State<FilterDialog> {
 
 extension DateTimeExtension on DateTime {
   String toShortString() {
-    return "${this.day}/${this.month}/${this.year}";
+    return "$day/$month/$year";
   }
 }
 
