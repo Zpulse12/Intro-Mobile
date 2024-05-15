@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login.screen.dart';
+import 'package:flutter_project/welcome.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
@@ -16,9 +16,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Firebase Login',
-      home: LoginScreen(),
+      home: WelcomePage(),
     );
   }
 }
