@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_project/all_matches_screen.dart';
 import 'welcome.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -16,7 +17,7 @@ class LoginScreen extends StatelessWidget {
         password: _passwordController.text.trim(),
       );
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()));
+          MaterialPageRoute(builder: (_) => AllMatchesScreen()));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to log in: ${e.toString()}")),
@@ -40,9 +41,7 @@ class LoginScreen extends StatelessWidget {
                   icon: Icon(Icons.arrow_back, color: Colors.white),
                   onPressed: () {
                     Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                          builder: (_) =>
-                              WelcomePage()),
+                      MaterialPageRoute(builder: (_) => WelcomePage()),
                       (Route<dynamic> route) => false,
                     );
                   },
@@ -97,16 +96,5 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text("Home")),
-        body: const Center(child: Text("Welcome Home!")));
   }
 }

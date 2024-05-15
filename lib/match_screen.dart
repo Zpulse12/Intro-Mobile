@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'configure_match_screen.dart';
 import 'filter_dialog.dart';
 import 'extensions.dart';
+import 'all_matches_screen.dart';
 
 void main() => runApp(MatchScreenApp());
 
@@ -102,6 +103,10 @@ class _MatchScreenState extends State<MatchScreen> {
 
   void _onMatchCreated() {
     print("Match Created!");
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => AllMatchesScreen()),
+    );
   }
 
   List<String> _getMatchTimes(DateTime date) {

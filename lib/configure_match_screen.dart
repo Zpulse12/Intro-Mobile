@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'match_details_screen.dart';
 
 class ConfigureMatchScreen extends StatefulWidget {
   final String place;
@@ -22,8 +25,33 @@ class _ConfigureMatchScreenState extends State<ConfigureMatchScreen> {
   String gender = 'All players';
 
   void _createMatch() {
-    widget.onMatchCreated();
-    Navigator.of(context).pop();
+    String userEmail = FirebaseAuth.instance.currentUser?.email ?? "Unknown";
+    FirebaseFirestore.instance.collection('matches').add({
+      'place': widget.place,
+      'date': widget.date,
+      'time': widget.time,
+      'matchType': matchType,
+      'gender': gender,
+      'creatorEmail': userEmail,
+      'createdAt': FieldValue.serverTimestamp(),
+    }).then((value) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MatchDetailsScreen(
+            place: widget.place,
+            date: widget.date,
+            time: widget.time,
+            matchType: matchType,
+            gender: gender,
+            creatorEmail: userEmail,
+          ),
+        ),
+      );
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to create match: $error')));
+    });
   }
 
   @override
