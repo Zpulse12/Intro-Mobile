@@ -15,8 +15,29 @@ class BookingScreen extends StatefulWidget {
 
 class _BookingScreenState extends State<BookingScreen> {
   List<String> timeSlots = [
-    "16:00", "16:30", "17:00", "17:30", "18:00", "18:30",
-    "19:00", "19:30", "20:00", "20:30", "21:00", "21:30"
+    "09:00",
+    "09:30",
+    "10:00",
+    "10:30",
+    "11:00",
+    "11:30",
+    "12:00",
+    "12:30",
+    "13:00",
+    "13:30",
+    "14:00",
+    "14:30",
+    "15:00",
+    "15:30",
+    "16:00",
+    "16:30",
+    "17:00",
+    "17:30",
+    "18:00",
+    "18:30",
+    "19:00",
+    "19:30",
+    "20:00"
   ];
   DateTime selectedDate = DateTime.now();
   bool showAvailableOnly = false;
@@ -31,10 +52,8 @@ class _BookingScreenState extends State<BookingScreen> {
   bool _isSlotInPast(String slot) {
     DateTime now = DateTime.now();
     List<String> parts = slot.split(':');
-    DateTime slotTime = DateTime(
-      selectedDate.year, selectedDate.month, selectedDate.day,
-      int.parse(parts[0]), int.parse(parts[1])
-    );
+    DateTime slotTime = DateTime(selectedDate.year, selectedDate.month,
+        selectedDate.day, int.parse(parts[0]), int.parse(parts[1]));
     return slotTime.isBefore(now);
   }
 
@@ -46,17 +65,16 @@ class _BookingScreenState extends State<BookingScreen> {
           existingBooking = booking;
         });
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   Future<void> _handleBooking(String timeSlot) async {
     try {
       await bookCourt(selectedDate, timeSlot, widget.location.name);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(
-          "Booking successful for $timeSlot on ${DateFormat('dd/MM/yyyy').format(selectedDate)}"
-        )),
+        SnackBar(
+            content: Text(
+                "Booking successful for $timeSlot on ${DateFormat('dd/MM/yyyy').format(selectedDate)}")),
       );
       setState(() {
         _checkExistingBooking();
@@ -68,13 +86,15 @@ class _BookingScreenState extends State<BookingScreen> {
     }
   }
 
-  Future<void> _handleCancelAndBookNew(String bookingId, String newTimeSlot) async {
+  Future<void> _handleCancelAndBookNew(
+      String bookingId, String newTimeSlot) async {
     try {
-      await cancelAndBookNew(bookingId, selectedDate, newTimeSlot, widget.location.name);
+      await cancelAndBookNew(
+          bookingId, selectedDate, newTimeSlot, widget.location.name);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(
-          "Booking updated to $newTimeSlot on ${DateFormat('dd/MM/yyyy').format(selectedDate)}"
-        )),
+        SnackBar(
+            content: Text(
+                "Booking updated to $newTimeSlot on ${DateFormat('dd/MM/yyyy').format(selectedDate)}")),
       );
       setState(() {
         _checkExistingBooking();
@@ -90,9 +110,9 @@ class _BookingScreenState extends State<BookingScreen> {
     try {
       await cancelBooking(bookingId);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(
-          "Booking cancelled successfully on ${DateFormat('dd/MM/yyyy').format(selectedDate)}"
-        )),
+        SnackBar(
+            content: Text(
+                "Booking cancelled successfully on ${DateFormat('dd/MM/yyyy').format(selectedDate)}")),
       );
       setState(() {
         existingBooking = null;
@@ -111,9 +131,8 @@ class _BookingScreenState extends State<BookingScreen> {
         return AlertDialog(
           title: const Text('Cancel Existing Booking'),
           content: Text(
-            'You already have a booking for this date at ${existingBooking!['timeSlot']}. '
-            'Do you want to cancel it and book $newTimeSlot instead?'
-          ),
+              'You already have a booking for this date at ${existingBooking!['timeSlot']}. '
+              'Do you want to cancel it and book $newTimeSlot instead?'),
           actions: <Widget>[
             TextButton(
               child: const Text('No'),
@@ -150,13 +169,15 @@ class _BookingScreenState extends State<BookingScreen> {
 
   Widget _buildTimeSlotButton(String time, bool isPast, bool isBooked) {
     return ElevatedButton(
-      onPressed: isPast ? null : () {
-        if (existingBooking != null) {
-          _showCancelDialog(existingBooking!.id, time);
-        } else {
-          _handleBooking(time);
-        }
-      },
+      onPressed: isPast
+          ? null
+          : () {
+              if (existingBooking != null) {
+                _showCancelDialog(existingBooking!.id, time);
+              } else {
+                _handleBooking(time);
+              }
+            },
       style: ElevatedButton.styleFrom(
         foregroundColor: isPast ? Colors.grey : Colors.black,
         backgroundColor: isPast ? Colors.grey[300] : Colors.white,
@@ -240,7 +261,8 @@ class _BookingScreenState extends State<BookingScreen> {
                               ),
                               const SizedBox(height: 16),
                               const Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
                                 children: [
                                   Column(
                                     children: [
@@ -265,10 +287,12 @@ class _BookingScreenState extends State<BookingScreen> {
                               ),
                               const SizedBox(height: 16),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
                                   Text(
-                                    DateFormat('dd/MM/yyyy').format(selectedDate),
+                                    DateFormat('dd/MM/yyyy')
+                                        .format(selectedDate),
                                     style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),
@@ -305,11 +329,8 @@ class _BookingScreenState extends State<BookingScreen> {
                           itemBuilder: (context, index) {
                             bool isBooked =
                                 bookedSlots.contains(timeSlots[index]);
-                            return _buildTimeSlotButton(
-                                timeSlots[index],
-                                _isSlotInPast(timeSlots[index]),
-                                isBooked
-                            );
+                            return _buildTimeSlotButton(timeSlots[index],
+                                _isSlotInPast(timeSlots[index]), isBooked);
                           },
                         ),
                         const SizedBox(height: 20),
