@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'all_matches_screen.dart';
 
 class MatchDetailsScreen extends StatelessWidget {
+  final String matchId;
   final String place;
   final String date;
   final String time;
@@ -10,6 +12,7 @@ class MatchDetailsScreen extends StatelessWidget {
   final String creatorEmail;
 
   MatchDetailsScreen({
+    required this.matchId,
     required this.place,
     required this.date,
     required this.time,
@@ -32,40 +35,64 @@ class MatchDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Match Details'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Match Details:',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black)),
-            SizedBox(height: 8),
-            Text('Place: $place',
-                style: TextStyle(fontSize: 16, color: Colors.black)),
-            Text('Date: $date',
-                style: TextStyle(fontSize: 16, color: Colors.black)),
-            Text('Time: $time',
-                style: TextStyle(fontSize: 16, color: Colors.black)),
-            Text('Match Type: $matchType',
-                style: TextStyle(fontSize: 16, color: Colors.black)),
-            Text('Gender: $gender',
-                style: TextStyle(fontSize: 16, color: Colors.black)),
-            Text('Created by: $creatorEmail',
-                style: TextStyle(fontSize: 16, color: Colors.black)),
-            SizedBox(height: 16),
-            placeImages.containsKey(place)
-                ? Image.asset(
-                    placeImages[place]!,
-                    width: double.infinity,
-                    height: 200,
-                    fit: BoxFit.cover,
-                  )
-                : Container(),
-          ],
-        ),
+      body: FutureBuilder<DocumentSnapshot>(
+        future:
+            FirebaseFirestore.instance.collection('matches').doc(matchId).get(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData || snapshot.hasError) {
+            return Center(child: Text('Error loading match details.'));
+          }
+
+          final matchData = snapshot.data!.data() as Map<String, dynamic>;
+          List<dynamic> participantEmails = matchData['participants'] ?? [];
+
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Match Details:',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black)),
+                SizedBox(height: 8),
+                Text('Place: $place',
+                    style: TextStyle(fontSize: 16, color: Colors.black)),
+                Text('Date: $date',
+                    style: TextStyle(fontSize: 16, color: Colors.black)),
+                Text('Time: $time',
+                    style: TextStyle(fontSize: 16, color: Colors.black)),
+                Text('Match Type: $matchType',
+                    style: TextStyle(fontSize: 16, color: Colors.black)),
+                Text('Gender: $gender',
+                    style: TextStyle(fontSize: 16, color: Colors.black)),
+                Text('Created by: $creatorEmail',
+                    style: TextStyle(fontSize: 16, color: Colors.black)),
+                SizedBox(height: 16),
+                placeImages.containsKey(place)
+                    ? Image.asset(
+                        placeImages[place]!,
+                        width: double.infinity,
+                        height: 200,
+                        fit: BoxFit.cover,
+                      )
+                    : Container(),
+                SizedBox(height: 16),
+                Text('Participants:',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black)),
+                ...participantEmails.map((email) => Text(email,
+                    style: TextStyle(fontSize: 16, color: Colors.black))),
+              ],
+            ),
+          );
+        },
       ),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(12.0),

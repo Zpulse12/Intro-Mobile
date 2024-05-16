@@ -33,12 +33,14 @@ class _ConfigureMatchScreenState extends State<ConfigureMatchScreen> {
       'matchType': matchType,
       'gender': gender,
       'creatorEmail': userEmail,
+      'participants': [userEmail], // Store the creator's email in participants
       'createdAt': FieldValue.serverTimestamp(),
     }).then((value) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => MatchDetailsScreen(
+            matchId: value.id, // Pass matchId to MatchDetailsScreen
             place: widget.place,
             date: widget.date,
             time: widget.time,

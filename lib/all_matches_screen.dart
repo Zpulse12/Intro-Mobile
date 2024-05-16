@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'match_details_screen.dart';
 import 'match_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AllMatchesScreen extends StatelessWidget {
   final Map<String, String> placeImages = {
@@ -11,6 +12,22 @@ class AllMatchesScreen extends StatelessWidget {
     'Garrincha (Hoboken)': 'assets/garincha.jpg',
     'Antwerp Padelclub (Berchem)': 'assets/berchem.jpg',
   };
+
+  void _joinMatch(String matchId, List<dynamic> participants) {
+    String? currentUserEmail = FirebaseAuth.instance.currentUser?.email;
+    if (currentUserEmail != null &&
+        participants.length < 4 &&
+        !participants.contains(currentUserEmail)) {
+      FirebaseFirestore.instance
+          .collection('matches')
+          .doc(matchId)
+          .update({
+            'participants': FieldValue.arrayUnion([currentUserEmail])
+          })
+          .then((_) => print('Joined match successfully!'))
+          .catchError((error) => print('Failed to join match: $error'));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,26 +73,42 @@ class AllMatchesScreen extends StatelessWidget {
               itemCount: matches.length,
               itemBuilder: (context, index) {
                 final match = matches[index];
+                List<dynamic> participants =
+                    match['participants'] as List<dynamic>;
                 return Card(
                   margin: EdgeInsets.all(8),
                   child: ListTile(
                     title: Text(match['place']),
                     subtitle: Text(
-                        'Date: ${match['date']} \nTime: ${match['time']} \nType: ${match['matchType']} \nGender: ${match['gender']} \nCreated by: ${match['creatorEmail']}'),
-                    trailing: ElevatedButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => MatchDetailsScreen(
-                                  place: match['place'],
-                                  date: match['date'],
-                                  time: match['time'],
-                                  matchType: match['matchType'],
-                                  gender: match['gender'],
-                                  creatorEmail: match['creatorEmail'],
-                                )),
-                      ),
-                      child: Text('View Details'),
+                        'Date: ${match['date']} \nTime: ${match['time']} \nType: ${match['matchType']} \nGender: ${match['gender']} \nCreated by: ${match['creatorEmail']} \nParticipants: ${participants.length}/4'),
+                    trailing: Wrap(
+                      spacing: 8, // space between two icons
+                      children: <Widget>[
+                        ElevatedButton(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MatchDetailsScreen(
+                                      matchId: match
+                                          .id, // Pass matchId to MatchDetailsScreen
+                                      place: match['place'],
+                                      date: match['date'],
+                                      time: match['time'],
+                                      matchType: match['matchType'],
+                                      gender: match['gender'],
+                                      creatorEmail: match['creatorEmail'],
+                                    )),
+                          ),
+                          child: Text('View Details'),
+                        ),
+                        ElevatedButton(
+                          onPressed: participants.length < 4
+                              ? () => _joinMatch(match.id, participants)
+                              : null,
+                          child: Text(
+                              participants.length < 4 ? 'Join Match' : 'Full'),
+                        ),
+                      ],
                     ),
                   ),
                 );
