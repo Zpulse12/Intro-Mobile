@@ -9,7 +9,8 @@ class FilterDialog extends StatefulWidget {
   final List<String> selectedHours;
   final Function(List<String>, List<DateTime>, String?, List<String>) onApply;
 
-  const FilterDialog({super.key, 
+  const FilterDialog({
+    super.key,
     required this.matchTimes,
     required this.selectedPlaces,
     required this.selectedDates,
@@ -104,8 +105,8 @@ class _FilterDialogState extends State<FilterDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           AppBar(
-            title:
-                const Text('Find new matches', style: TextStyle(color: Colors.white)),
+            title: const Text('Find new matches',
+                style: TextStyle(color: Colors.white)),
             automaticallyImplyLeading: false,
             backgroundColor: Colors.blue,
             elevation: 0,
@@ -188,7 +189,7 @@ class _FilterDialogState extends State<FilterDialog> {
                   }).toList(),
                 ),
                 const SizedBox(height: 16),
-                const Text('Pick up your time',
+                const Text('Pick your time',
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -213,8 +214,7 @@ class _FilterDialogState extends State<FilterDialog> {
                         setState(() {
                           selectedTime = time;
                           availableHours = widget.matchTimes[time]!;
-                          selectedHours
-                              .clear(); // Clear previous hour selection
+                          selectedHours.clear();
                         });
                       },
                     );
@@ -255,7 +255,8 @@ class _FilterDialogState extends State<FilterDialog> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: allFiltersSelected ? Colors.blue : Colors.grey,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               ),
               onPressed: allFiltersSelected
                   ? () => widget.onApply(selectedPlaces, selectedDates,
