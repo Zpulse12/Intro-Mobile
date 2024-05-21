@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/book_court.dart';
-import 'search_court.dart'; // Ensure this import is correct
+import 'package:flutter_project/search_court.dart';
+import 'package:flutter_project/all_matches_screen.dart'; // Import the AllMatchesScreen
+import 'package:flutter_project/account_page.dart'; // Import the ProfileScreen
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -86,6 +88,14 @@ class HomeScreen extends StatelessWidget {
           BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Community'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
+        onTap: (index) {
+          if (index == 3) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ProfileScreen()),
+            );
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
@@ -106,6 +116,11 @@ class HomeScreen extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => SearchCourtScreen()),
+            );
+          } else if (title == 'Play an open match') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AllMatchesScreen()),
             );
           }
         },
