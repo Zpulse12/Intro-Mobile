@@ -1,3 +1,4 @@
+// search_court.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_project/book_court.dart';
 import 'package:flutter_project/booked_courts.dart';
@@ -19,12 +20,12 @@ class _SearchCourtScreenState extends State<SearchCourtScreen> {
         backgroundColor: Colors.blueAccent,
         actions: [
           IconButton(
-            icon: Icon(Icons.calendar_today),
+            icon: const Icon(Icons.calendar_today),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => BookedCourtsScreen(),
+                  builder: (context) => const BookedCourtsScreen(),
                 ),
               );
             },

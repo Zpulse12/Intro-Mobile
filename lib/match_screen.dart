@@ -167,7 +167,11 @@ class _MatchScreenState extends State<MatchScreen> {
     for (var slot in bookedSlots) {
       DateTime bookedStart = format.parse(slot['startTime']!);
       DateTime bookedEnd = format.parse(slot['endTime']!);
-      if (start.isBefore(bookedEnd) && end.isAfter(bookedStart)) {
+
+      // Adjust the overlapping logic here
+      if ((start.isBefore(bookedEnd) && end.isAfter(bookedStart)) ||
+          (startTime == "09:30" && bookedStart.isBefore(start)) ||
+          (startTime == "10:00" && bookedStart.isBefore(start))) {
         return true;
       }
     }
