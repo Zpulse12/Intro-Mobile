@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'welcome.dart';
 
 void main() async {
@@ -82,8 +83,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   bool get isPasswordValid => _passwordError.isEmpty;
 
-  final FirebaseAuth _auth =
-      FirebaseAuth.instance; // Firebase Authentication instance
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> _register() async {
     try {
@@ -93,12 +94,33 @@ class _RegisterPageState extends State<RegisterPage> {
         password: _passwordController.text.trim(),
       );
 
-      await userCredential.user!
-          .updateProfile(displayName: _nameController.text);
+      User? user = userCredential.user;
+      await user!.updateProfile(displayName: _nameController.text);
+
+      // Save user data to Firestore
+      await _firestore.collection('users').doc(user.uid).set({
+        'name': _nameController.text,
+        'email': _emailController.text,
+        'phone': _phoneController.text,
+        'profileImageUrl':
+            '', 
+        'bestHand': 'Right-handed',
+        'courtPosition': 'Both sides',
+        'matchType': 'Competitive, Friendly',
+        'preferredTime': 'Morning',
+        'groups': []
+      });
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(
-                "Registration successful! Welcome, ${userCredential.user!.displayName}")),
+            content:
+                Text("Registration successful! Welcome, ${user.displayName}")),
+      );
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const WelcomePage(),
+        ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -125,7 +147,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
                           builder: (_) =>
-                              const WelcomePage()), // Navigate back to WelcomePage
+                              const WelcomePage()), 
                       (Route<dynamic> route) => false,
                     );
                   },
