@@ -1,55 +1,88 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
-Future<DocumentSnapshot?> checkExistingBooking() async {
-  User? user = _auth.currentUser;
-  if (user != null) {
-    QuerySnapshot querySnapshot = await _firestore
-        .collection('bookings')
-        .where('userId', isEqualTo: user.uid)
-        .get();
-
-    if (querySnapshot.docs.isNotEmpty) {
-      return querySnapshot.docs.first;
-    }
-  }
-  return null;
-}
-
-Future<List<String>> getBookedSlots(DateTime selectedDate, String courtName) async {
-  QuerySnapshot querySnapshot = await _firestore
+Future<List<Map<String, String>>> getBookedSlots(
+    DateTime selectedDate, String courtName) async {
+  QuerySnapshot courtBookings = await _firestore
       .collection('bookings')
       .where('date', isEqualTo: selectedDate)
       .where('courtName', isEqualTo: courtName)
       .get();
 
-  List<String> bookedSlots = [];
-  for (var doc in querySnapshot.docs) {
-    bookedSlots.add(doc['timeSlot']);
+  QuerySnapshot matches = await _firestore
+      .collection('matches')
+      .where('date', isEqualTo: selectedDate)
+      .where('place', isEqualTo: courtName)
+      .get();
+
+  List<Map<String, String>> bookedSlots = [];
+
+  for (var doc in courtBookings.docs) {
+    bookedSlots.add({
+      'startTime': doc['startTime'],
+      'endTime': _calculateEndTime(doc['startTime'])
+    });
   }
+
+  for (var doc in matches.docs) {
+    bookedSlots.add(
+        {'startTime': doc['time'], 'endTime': _calculateEndTime(doc['time'])});
+  }
+
   return bookedSlots;
 }
 
-Future<void> bookCourt(DateTime selectedDate, String timeSlot, String courtName) async {
+String _calculateEndTime(String startTime) {
+  final DateFormat format = DateFormat.Hm();
+  DateTime start = format.parse(startTime);
+  DateTime end = start.add(Duration(minutes: 89));
+  return format.format(end);
+}
+
+bool _isOverlapping(
+    String startTime, String endTime, List<Map<String, String>> bookedSlots) {
+  final DateFormat format = DateFormat.Hm();
+  DateTime start = format.parse(startTime);
+  DateTime end = format.parse(endTime);
+
+  for (var slot in bookedSlots) {
+    DateTime bookedStart = format.parse(slot['startTime']!);
+    DateTime bookedEnd = format.parse(slot['endTime']!);
+    if (start.isBefore(bookedEnd) && end.isAfter(bookedStart)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+Future<void> bookCourt(
+    DateTime selectedDate, String startTime, String courtName,
+    {bool isMatch = false}) async {
   User? user = _auth.currentUser;
   if (user != null) {
     try {
-      DocumentSnapshot? existingBooking = await checkExistingBooking();
-      if (existingBooking != null) {
-        throw 'You already have a booking for this date at ${existingBooking['timeSlot']}.';
-      } else {
-        await _firestore.collection('bookings').add({
-          'userId': user.uid,
-          'userName': user.displayName ?? 'Unknown User',
-          'date': selectedDate,
-          'timeSlot': timeSlot,
-          'courtName': courtName,
-          'createdAt': FieldValue.serverTimestamp(),
-        });
+      String endTime = _calculateEndTime(startTime);
+      List<Map<String, String>> bookedSlots =
+          await getBookedSlots(selectedDate, courtName);
+
+      if (_isOverlapping(startTime, endTime, bookedSlots)) {
+        throw 'Selected time slot overlaps with an existing booking.';
       }
+
+      await _firestore.collection('bookings').add({
+        'userId': user.uid,
+        'userName': user.displayName ?? 'Unknown User',
+        'date': selectedDate,
+        'startTime': startTime,
+        'endTime': endTime,
+        'courtName': courtName,
+        'isMatch': isMatch,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
     } catch (e) {
       throw 'Failed to book slot: $e';
     }
@@ -66,10 +99,12 @@ Future<void> cancelBooking(String bookingId) async {
   }
 }
 
-Future<void> cancelAndBookNew(String bookingId, DateTime selectedDate, String newTimeSlot, String courtName) async {
+Future<void> cancelAndBookNew(String bookingId, DateTime selectedDate,
+    String newStartTime, String courtName,
+    {bool isMatch = false}) async {
   try {
     await cancelBooking(bookingId);
-    await bookCourt(selectedDate, newTimeSlot, courtName);
+    await bookCourt(selectedDate, newStartTime, courtName, isMatch: isMatch);
   } catch (e) {
     throw 'Failed to update booking: $e';
   }
