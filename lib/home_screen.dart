@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project/book_court.dart';
 import 'package:flutter_project/search_court.dart';
-import 'package:flutter_project/all_matches_screen.dart';
+import 'package:flutter_project/all_matches_screen.dart'; 
+import 'package:flutter_project/account_page.dart'; 
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -86,6 +89,14 @@ class HomeScreen extends StatelessWidget {
           BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Community'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
+        onTap: (index) {
+          if (index == 3) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ProfileScreen()),
+            );
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
