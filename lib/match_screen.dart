@@ -3,6 +3,8 @@ import 'configure_match_screen.dart';
 import 'filter_dialog.dart';
 import 'extensions.dart';
 import 'all_matches_screen.dart';
+import 'book_helper.dart';
+import 'package:intl/intl.dart';
 
 void main() => runApp(MatchScreenApp());
 
@@ -56,9 +58,20 @@ class _MatchScreenState extends State<MatchScreen> {
       "19:30",
       "20:00"
     ],
-    "Morning": [ "09:00", "09:30", "10:00","10:30", "11:00","11:30","12:00"],
-    "Afternoon": ["12:30", "13:00","13:30","14:00","14:30" "15:00","15:30", "16:00","16:30", "17:00"],
-    "Evening": ["17:30", "18:00","18:30", "19:00","19:30", "20:00"]
+    "Morning": ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00"],
+    "Afternoon": [
+      "12:30",
+      "13:00",
+      "13:30",
+      "14:00",
+      "14:30",
+      "15:00",
+      "15:30",
+      "16:00",
+      "16:30",
+      "17:00"
+    ],
+    "Evening": ["17:30", "18:00", "18:30", "19:00", "19:30", "20:00"]
   };
 
   Map<String, String> placeImages = {
@@ -116,12 +129,11 @@ class _MatchScreenState extends State<MatchScreen> {
     );
   }
 
-  List<String> _getMatchTimes(DateTime date) {
-    if (selectedTime == null || !matchTimes.containsKey(selectedTime)) {
-      return [];
-    }
+  Future<List<String>> _getAvailableMatchTimes(
+      DateTime date, String place) async {
+    List<String> times = matchTimes[selectedTime] ?? [];
+    List<Map<String, String>> bookedSlots = await getBookedSlots(date, place);
 
-    List<String> times = matchTimes[selectedTime]!;
     if (date.isSameDate(DateTime.now())) {
       final now = TimeOfDay.now();
       times = times.where((time) {
@@ -133,11 +145,33 @@ class _MatchScreenState extends State<MatchScreen> {
       }).toList();
     }
 
-    if (selectedHours.isNotEmpty) {
-      return times.where((time) => selectedHours.contains(time)).toList();
-    }
+    return times.where((time) {
+      String endTime = _calculateEndTime(time);
+      return !_isOverlapping(time, endTime, bookedSlots);
+    }).toList();
+  }
 
-    return times;
+  String _calculateEndTime(String startTime) {
+    final DateFormat format = DateFormat.Hm();
+    DateTime start = format.parse(startTime);
+    DateTime end = start.add(Duration(minutes: 90));
+    return format.format(end);
+  }
+
+  bool _isOverlapping(
+      String startTime, String endTime, List<Map<String, String>> bookedSlots) {
+    final DateFormat format = DateFormat.Hm();
+    DateTime start = format.parse(startTime);
+    DateTime end = format.parse(endTime);
+
+    for (var slot in bookedSlots) {
+      DateTime bookedStart = format.parse(slot['startTime']!);
+      DateTime bookedEnd = format.parse(slot['endTime']!);
+      if (start.isBefore(bookedEnd) && end.isAfter(bookedStart)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @override
@@ -212,24 +246,43 @@ class _MatchScreenState extends State<MatchScreen> {
                                               color: Colors.black),
                                         ),
                                         SizedBox(height: 8),
-                                        Wrap(
-                                          spacing: 8.0,
-                                          runSpacing: 4.0,
-                                          children:
-                                              _getMatchTimes(date).map((time) {
-                                            return ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: Colors.blue,
-                                                foregroundColor: Colors.white,
-                                              ),
-                                              onPressed: () =>
-                                                  _onTimeSlotSelected(
-                                                      place,
-                                                      date.toShortString(),
-                                                      time),
-                                              child: Text(time),
+                                        FutureBuilder<List<String>>(
+                                          future: _getAvailableMatchTimes(
+                                              date, place),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return CircularProgressIndicator();
+                                            } else if (snapshot.hasError) {
+                                              return Text(
+                                                  'Error: ${snapshot.error}');
+                                            } else if (!snapshot.hasData ||
+                                                snapshot.data!.isEmpty) {
+                                              return Text('No available times');
+                                            }
+                                            return Wrap(
+                                              spacing: 8.0,
+                                              runSpacing: 4.0,
+                                              children:
+                                                  snapshot.data!.map((time) {
+                                                return ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Colors.blue,
+                                                    foregroundColor:
+                                                        Colors.white,
+                                                  ),
+                                                  onPressed: () =>
+                                                      _onTimeSlotSelected(
+                                                          place,
+                                                          date.toShortString(),
+                                                          time),
+                                                  child: Text(time),
+                                                );
+                                              }).toList(),
                                             );
-                                          }).toList(),
+                                          },
                                         ),
                                       ],
                                     ),

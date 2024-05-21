@@ -82,7 +82,7 @@ class AllMatchesScreen extends StatelessWidget {
                     subtitle: Text(
                         'Date: ${match['date']} \nTime: ${match['time']} \nType: ${match['matchType']} \nGender: ${match['gender']} \nCreated by: ${match['creatorEmail']} \nParticipants: ${participants.length}/4'),
                     trailing: Wrap(
-                      spacing: 8, // space between two icons
+                      spacing: 8,
                       children: <Widget>[
                         ElevatedButton(
                           onPressed: () => Navigator.push(
@@ -90,7 +90,7 @@ class AllMatchesScreen extends StatelessWidget {
                             MaterialPageRoute(
                                 builder: (context) => MatchDetailsScreen(
                                       matchId: match
-                                          .id, // Pass matchId to MatchDetailsScreen
+                                          .id, 
                                       place: match['place'],
                                       date: match['date'],
                                       time: match['time'],

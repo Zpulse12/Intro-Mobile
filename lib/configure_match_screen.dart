@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'match_details_screen.dart';
+import 'book_helper.dart';
+import 'package:intl/intl.dart';
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class ConfigureMatchScreen extends StatefulWidget {
   final String place;
@@ -24,36 +28,46 @@ class _ConfigureMatchScreenState extends State<ConfigureMatchScreen> {
   String matchType = 'Competitive';
   String gender = 'All players';
 
-  void _createMatch() {
-    String userEmail = FirebaseAuth.instance.currentUser?.email ?? "Unknown";
-    FirebaseFirestore.instance.collection('matches').add({
-      'place': widget.place,
-      'date': widget.date,
-      'time': widget.time,
-      'matchType': matchType,
-      'gender': gender,
-      'creatorEmail': userEmail,
-      'participants': [userEmail], // Store the creator's email in participants
-      'createdAt': FieldValue.serverTimestamp(),
-    }).then((value) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MatchDetailsScreen(
-            matchId: value.id, // Pass matchId to MatchDetailsScreen
-            place: widget.place,
-            date: widget.date,
-            time: widget.time,
-            matchType: matchType,
-            gender: gender,
-            creatorEmail: userEmail,
+  void _createMatch() async {
+    User? user = _auth.currentUser;
+    String userName = user?.displayName ?? 'unknown user';
+    DateTime selectedDate = DateFormat('dd/MM/yyyy').parse(widget.date);
+
+    try {
+      await bookCourt(selectedDate, widget.time, widget.place, isMatch: true);
+
+      FirebaseFirestore.instance.collection('matches').add({
+        'place': widget.place,
+        'date': widget.date,
+        'time': widget.time,
+        'matchType': matchType,
+        'gender': gender,
+        'creatorEmail': userName,
+        'participants': [userName],
+        'createdAt': FieldValue.serverTimestamp(),
+      }).then((value) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MatchDetailsScreen(
+              matchId: value.id,
+              place: widget.place,
+              date: widget.date,
+              time: widget.time,
+              matchType: matchType,
+              gender: gender,
+              creatorEmail: userName,
+            ),
           ),
-        ),
-      );
-    }).catchError((error) {
+        );
+      }).catchError((error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to create match: $error')));
+      });
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to create match: $error')));
-    });
+          SnackBar(content: Text('Failed to book court for match: $e')));
+    }
   }
 
   @override
