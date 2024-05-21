@@ -13,19 +13,25 @@ class AllMatchesScreen extends StatelessWidget {
     'Antwerp Padelclub (Berchem)': 'assets/berchem.jpg',
   };
 
-  void _joinMatch(String matchId, List<dynamic> participants) {
-    String? currentUserEmail = FirebaseAuth.instance.currentUser?.email;
-    if (currentUserEmail != null &&
-        participants.length < 4 &&
-        !participants.contains(currentUserEmail)) {
-      FirebaseFirestore.instance
-          .collection('matches')
-          .doc(matchId)
-          .update({
-            'participants': FieldValue.arrayUnion([currentUserEmail])
-          })
-          .then((_) => print('Joined match successfully!'))
-          .catchError((error) => print('Failed to join match: $error'));
+  void _joinMatch(String matchId, List<dynamic> participants) async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null && participants.length < 4) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .get();
+      String? currentUserName = userDoc['name'];
+
+      if (currentUserName != null && !participants.contains(currentUserName)) {
+        FirebaseFirestore.instance
+            .collection('matches')
+            .doc(matchId)
+            .update({
+              'participants': FieldValue.arrayUnion([currentUserName])
+            })
+            .then((_) => print('Joined match successfully!'))
+            .catchError((error) => print('Failed to join match: $error'));
+      }
     }
   }
 
@@ -80,7 +86,7 @@ class AllMatchesScreen extends StatelessWidget {
                   child: ListTile(
                     title: Text(match['place']),
                     subtitle: Text(
-                        'Date: ${match['date']} \nTime: ${match['time']} \nType: ${match['matchType']} \nGender: ${match['gender']} \nCreated by: ${match['creatorEmail']} \nParticipants: ${participants.length}/4'),
+                        'Date: ${match['date']} \nTime: ${match['time']} \nType: ${match['matchType']} \nGender: ${match['gender']} \nCreated by: ${match['creatorEmail']} \nParticipants: ${participants.join(', ')}'),
                     trailing: Wrap(
                       spacing: 8,
                       children: <Widget>[
@@ -89,8 +95,7 @@ class AllMatchesScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => MatchDetailsScreen(
-                                      matchId: match
-                                          .id, 
+                                      matchId: match.id,
                                       place: match['place'],
                                       date: match['date'],
                                       time: match['time'],

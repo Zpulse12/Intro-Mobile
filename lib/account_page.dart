@@ -23,7 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     _auth.userChanges().listen((User? user) {
       if (user == null) {
-        Navigator.pushReplacementNamed(context, '/login');
+        Navigator.pushReplacementNamed(context, '/welcome');
       } else {
         setState(() {
           this.user = user;
@@ -36,7 +36,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _fetchUserData() async {
     if (user != null) {
       try {
-        DocumentSnapshot userDoc = await _firestore.collection('users').doc(user!.uid).get();
+        DocumentSnapshot userDoc =
+            await _firestore.collection('users').doc(user!.uid).get();
         if (userDoc.exists) {
           setState(() {
             userData = userDoc.data() as Map<String, dynamic>?;
@@ -166,7 +167,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                                 IconButton(
                                   icon: Icon(Icons.edit, size: 16),
-                                  onPressed: () => _showEditDialog('name', userData!['name'] ?? ''),
+                                  onPressed: () => _showEditDialog(
+                                      'name', userData!['name'] ?? ''),
                                 ),
                               ],
                             ),
@@ -198,10 +200,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        _buildPreferenceItem('Best hand', userData!['bestHand'] ?? 'No Preference'),
-                        _buildPreferenceItem('Court position', userData!['courtPosition'] ?? 'No Preference'),
-                        _buildPreferenceItem('Match type', userData!['matchType'] ?? 'No Preference'),
-                        _buildPreferenceItem('Preferred time to play', userData!['preferredTime'] ?? 'No Preference'),
+                        _buildPreferenceItem('Best hand',
+                            userData!['bestHand'] ?? 'No Preference'),
+                        _buildPreferenceItem('Court position',
+                            userData!['courtPosition'] ?? 'No Preference'),
+                        _buildPreferenceItem('Match type',
+                            userData!['matchType'] ?? 'No Preference'),
+                        _buildPreferenceItem('Preferred time to play',
+                            userData!['preferredTime'] ?? 'No Preference'),
                         const SizedBox(height: 16),
                         const Text(
                           'Update Profile Image',
@@ -219,7 +225,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(height: 8),
                         ElevatedButton(
-                          onPressed: () => _updateUserData('profileImageUrl', _imageUrlController.text),
+                          onPressed: () => _updateUserData(
+                              'profileImageUrl', _imageUrlController.text),
                           child: const Text('Update Image URL'),
                         ),
                       ],

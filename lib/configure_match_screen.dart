@@ -30,7 +30,11 @@ class _ConfigureMatchScreenState extends State<ConfigureMatchScreen> {
 
   void _createMatch() async {
     User? user = _auth.currentUser;
-    String userName = user?.displayName ?? 'unknown user';
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user!.uid)
+        .get();
+    String userName = userDoc['name'];
     DateTime selectedDate = DateFormat('dd/MM/yyyy').parse(widget.date);
 
     try {
