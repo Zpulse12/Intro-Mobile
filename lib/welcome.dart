@@ -1,6 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'login.screen.dart'; 
-import 'register.dart'; 
+import 'login.screen.dart';
+import 'register.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -15,6 +16,10 @@ class MyApp extends StatelessWidget {
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
+  Future<void> _signInAnonymously(BuildContext context) async {
+    await FirebaseAuth.instance.signInAnonymously();
+    Navigator.pushReplacementNamed(context, '/home');
+  }
 
   @override
   Widget build(BuildContext context) {
