@@ -114,7 +114,7 @@ class _RegisterPageState extends State<RegisterPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content:
-                Text("Registration successful! Welcome, ${user.displayName}")),
+                Text("Registration successful! Welcome, ${user.email}")),
       );
 
       Navigator.of(context).pushReplacement(
