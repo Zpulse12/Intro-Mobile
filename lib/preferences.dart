@@ -1,38 +1,36 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(const MyApp());
+class PreferencesDialog extends StatefulWidget {
+  final Map<String, dynamic> userData;
+  final Function(String, dynamic) updateUserData;
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Playtonic Preferences',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: const PreferencesScreen(),
-    );
-  }
-}
-
-class PreferencesScreen extends StatefulWidget {
-  const PreferencesScreen({super.key});
+  const PreferencesDialog({
+    required this.userData,
+    required this.updateUserData,
+  });
 
   @override
-  _PreferencesScreenState createState() => _PreferencesScreenState();
+  _PreferencesDialogState createState() => _PreferencesDialogState();
 }
 
-class _PreferencesScreenState extends State<PreferencesScreen> {
-  String bestHand = 'Right-Handed';
-  String courtSide = 'Backhand';
-  String matchType = 'Competitive';
+class _PreferencesDialogState extends State<PreferencesDialog> {
+  late String bestHand;
+  late String courtSide;
+  late String matchType;
+  late String preferredTime;
   bool setTimeFrame = false;
   bool setDays = false;
-  String preferredTime = 'Morning';
   List<String> days = [];
+
+  @override
+  void initState() {
+    super.initState();
+    bestHand = widget.userData['bestHand'] ?? 'Right-Handed';
+    courtSide = widget.userData['courtSide'] ?? 'Backhand';
+    matchType = widget.userData['matchType'] ?? 'Competitive';
+    preferredTime = widget.userData['preferredTime'] ?? 'Morning';
+    days = List<String>.from(widget.userData['days'] ?? []);
+  }
 
   Widget buildChoiceChip(String label, String value, String groupValue) {
     bool isSelected = groupValue == value;
@@ -71,21 +69,23 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       },
       showCheckmark: false,
       selectedColor: Colors.blue,
-      backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: isSelected ? Colors.blue : Colors.black),
+      backgroundColor: Colors.grey[200],
+      labelStyle: TextStyle(
+        color: isSelected ? Colors.white : Colors.black,
+      ),
+      shape: StadiumBorder(
+        side: BorderSide(
+          color: isSelected ? Colors.blue : Colors.black,
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Player Preferences'),
-      ),
-      body: SingleChildScrollView(
+    return AlertDialog(
+      title: const Text('Player Preferences'),
+      content: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,7 +114,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               (value) => setState(() => matchType = value),
             ),
             const SizedBox(height: 24),
-            buildPreferenceTitle('My Preferred Time to Play'),
+            buildPreferenceTitle('Preferred Time to Play'),
             const SizedBox(height: 8),
             buildSwitchTile(
               'Set by Time Frame',
@@ -137,11 +137,31 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             ),
             if (setDays) ...[
               const SizedBox(height: 8),
+              buildPreferenceTitle('Preferred Days'),
               buildDaysSelection(),
             ],
           ],
         ),
       ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            widget.updateUserData('bestHand', bestHand);
+            widget.updateUserData('courtSide', courtSide);
+            widget.updateUserData('matchType', matchType);
+            widget.updateUserData('preferredTime', preferredTime);
+            widget.updateUserData('days', days);
+            Navigator.of(context).pop();
+          },
+          child: const Text('Save'),
+        ),
+      ],
     );
   }
 
@@ -189,10 +209,14 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             },
             showCheckmark: false,
             selectedColor: Colors.blue,
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-              side: BorderSide(color: isSelected ? Colors.blue : Colors.black),
+            backgroundColor: Colors.grey[200],
+            labelStyle: TextStyle(
+              color: isSelected ? Colors.white : Colors.black,
+            ),
+            shape: StadiumBorder(
+              side: BorderSide(
+                color: isSelected ? Colors.blue : Colors.black,
+              ),
             ),
           );
         },

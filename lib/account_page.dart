@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -59,8 +60,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future<void> _updateUserData(String field, String value) async {
-    if (user != null && value.isNotEmpty) {
+  Future<void> _updateUserData(String field, dynamic value) async {
+    if (user != null && value != null && value.toString().isNotEmpty) {
       try {
         await _firestore.collection('users').doc(user!.uid).update({
           field: value,
@@ -109,6 +110,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Text('Save'),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showPreferencesDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => PreferencesDialog(
+        userData: userData!,
+        updateUserData: _updateUserData,
       ),
     );
   }
@@ -208,6 +219,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             userData!['matchType'] ?? 'No Preference'),
                         _buildPreferenceItem('Preferred time to play',
                             userData!['preferredTime'] ?? 'No Preference'),
+                        _buildPreferenceItem('Preferred days',
+                            (userData!['days'] as List<dynamic>?)
+                                    ?.join(', ') ??
+                                'No Preference'),
                         const SizedBox(height: 16),
                         const Text(
                           'Update Profile Image',
@@ -228,6 +243,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           onPressed: () => _updateUserData(
                               'profileImageUrl', _imageUrlController.text),
                           child: const Text('Update Image URL'),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: _showPreferencesDialog,
+                          child: const Text('Edit Preferences'),
                         ),
                       ],
                     ),
@@ -252,10 +272,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Text(
             value,
             style: const TextStyle(color: Colors.grey),
-          ),
-          IconButton(
-            icon: Icon(Icons.edit, size: 16),
-            onPressed: () => _showEditDialog(title, value),
           ),
         ],
       ),
