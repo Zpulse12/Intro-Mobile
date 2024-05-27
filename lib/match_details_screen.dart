@@ -47,7 +47,7 @@ class MatchDetailsScreen extends StatelessWidget {
           }
 
           final matchData = snapshot.data!.data() as Map<String, dynamic>;
-          List<dynamic> participantEmails = matchData['participants'] ?? [];
+          List<dynamic> participants = matchData['participants'] ?? [];
 
           return Padding(
             padding: const EdgeInsets.all(16.0),
@@ -87,8 +87,14 @@ class MatchDetailsScreen extends StatelessWidget {
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.black)),
-                ...participantEmails.map((email) => Text(email,
-                    style: TextStyle(fontSize: 16, color: Colors.black))),
+                ...participants.map((participant) {
+                  if (participant is Map<String, dynamic>) {
+                    return Text(participant['name'],
+                        style: TextStyle(fontSize: 16, color: Colors.black));
+                  }
+                  return Text('Unknown',
+                      style: TextStyle(fontSize: 16, color: Colors.black));
+                }).toList(),
               ],
             ),
           );

@@ -30,47 +30,52 @@ class _ConfigureMatchScreenState extends State<ConfigureMatchScreen> {
 
   void _createMatch() async {
     User? user = _auth.currentUser;
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user!.uid)
-        .get();
-    String userName = userDoc['name'];
-    DateTime selectedDate = DateFormat('dd/MM/yyyy').parse(widget.date);
+    if (user != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      String userName = userDoc['name'];
+      String userEmail = user.email!;
+      DateTime selectedDate = DateFormat('dd/MM/yyyy').parse(widget.date);
 
-    try {
-      await bookCourt(selectedDate, widget.time, widget.place, isMatch: true);
+      try {
+        await bookCourt(selectedDate, widget.time, widget.place, isMatch: true);
 
-      FirebaseFirestore.instance.collection('matches').add({
-        'place': widget.place,
-        'date': widget.date,
-        'time': widget.time,
-        'matchType': matchType,
-        'gender': gender,
-        'creatorEmail': userName,
-        'participants': [userName],
-        'createdAt': FieldValue.serverTimestamp(),
-      }).then((value) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MatchDetailsScreen(
-              matchId: value.id,
-              place: widget.place,
-              date: widget.date,
-              time: widget.time,
-              matchType: matchType,
-              gender: gender,
-              creatorEmail: userName,
+        FirebaseFirestore.instance.collection('matches').add({
+          'place': widget.place,
+          'date': widget.date,
+          'time': widget.time,
+          'matchType': matchType,
+          'gender': gender,
+          'creatorEmail': userEmail,
+          'participants': [
+            {'name': userName, 'email': userEmail}
+          ],
+          'createdAt': FieldValue.serverTimestamp(),
+        }).then((value) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MatchDetailsScreen(
+                matchId: value.id,
+                place: widget.place,
+                date: widget.date,
+                time: widget.time,
+                matchType: matchType,
+                gender: gender,
+                creatorEmail: userEmail,
+              ),
             ),
-          ),
-        );
-      }).catchError((error) {
+          );
+        }).catchError((error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Failed to create match: $error')));
+        });
+      } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to create match: $error')));
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to book court for match: $e')));
+            SnackBar(content: Text('Failed to book court for match: $e')));
+      }
     }
   }
 

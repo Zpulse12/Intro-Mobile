@@ -16,21 +16,26 @@ class AllMatchesScreen extends StatelessWidget {
   void _joinMatch(String matchId, List<dynamic> participants) async {
     User? currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null && participants.length < 4) {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(currentUser.uid)
-          .get();
-      String? currentUserName = userDoc['name'];
+      String? currentUserEmail = currentUser.email;
+      String? currentUserName = currentUser.displayName;
 
-      if (currentUserName != null && !participants.contains(currentUserName)) {
-        FirebaseFirestore.instance
-            .collection('matches')
-            .doc(matchId)
-            .update({
-              'participants': FieldValue.arrayUnion([currentUserName])
-            })
-            .then((_) => print('Joined match successfully!'))
-            .catchError((error) => print('Failed to join match: $error'));
+      if (currentUserEmail != null && currentUserName != null) {
+        bool isAlreadyParticipant = participants.any((participant) =>
+            participant is Map<String, dynamic> &&
+            participant['email'] == currentUserEmail);
+
+        if (!isAlreadyParticipant) {
+          FirebaseFirestore.instance
+              .collection('matches')
+              .doc(matchId)
+              .update({
+                'participants': FieldValue.arrayUnion([
+                  {'name': currentUserName, 'email': currentUserEmail}
+                ])
+              })
+              .then((_) => print('Joined match successfully!'))
+              .catchError((error) => print('Failed to join match: $error'));
+        }
       }
     }
   }
@@ -86,7 +91,12 @@ class AllMatchesScreen extends StatelessWidget {
                   child: ListTile(
                     title: Text(match['place']),
                     subtitle: Text(
-                        'Date: ${match['date']} \nTime: ${match['time']} \nType: ${match['matchType']} \nGender: ${match['gender']} \nCreated by: ${match['creatorEmail']} \nParticipants: ${participants.join(', ')}'),
+                        'Date: ${match['date']} \nTime: ${match['time']} \nType: ${match['matchType']} \nGender: ${match['gender']} \nCreated by: ${match['creatorEmail']} \nParticipants: ${participants.map((participant) {
+                      if (participant is Map<String, dynamic>) {
+                        return participant['name'];
+                      }
+                      return 'Unknown';
+                    }).join(', ')}'),
                     trailing: Wrap(
                       spacing: 8,
                       children: <Widget>[
