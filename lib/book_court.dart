@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'book_helper.dart';
@@ -44,8 +45,17 @@ class _BookingScreenState extends State<BookingScreen> {
   bool showAvailableOnly = false;
 
   Future<void> _handleBooking(String timeSlot) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('You need to be logged in to book a court.')),
+      );
+      return;
+    }
     try {
-      await bookCourt(selectedDate, timeSlot, widget.location.name);
+      await bookCourt(selectedDate, timeSlot, widget.location.name,
+          isMatch: false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(

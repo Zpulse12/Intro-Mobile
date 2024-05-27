@@ -40,6 +40,28 @@ class AllMatchesScreen extends StatelessWidget {
     }
   }
 
+  void _leaveMatch(String matchId, List<dynamic> participants) async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      String? currentUserEmail = currentUser.email;
+
+      if (currentUserEmail != null) {
+        var participantToRemove = participants.firstWhere((participant) =>
+            participant is Map<String, dynamic> &&
+            participant['email'] == currentUserEmail);
+
+        FirebaseFirestore.instance
+            .collection('matches')
+            .doc(matchId)
+            .update({
+              'participants': FieldValue.arrayRemove([participantToRemove])
+            })
+            .then((_) => print('Left match successfully!'))
+            .catchError((error) => print('Failed to leave match: $error'));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Theme(
@@ -88,40 +110,70 @@ class AllMatchesScreen extends StatelessWidget {
                     match['participants'] as List<dynamic>;
                 return Card(
                   margin: EdgeInsets.all(8),
-                  child: ListTile(
-                    title: Text(match['place']),
-                    subtitle: Text(
-                        'Date: ${match['date']} \nTime: ${match['time']} \nType: ${match['matchType']} \nGender: ${match['gender']} \nCreated by: ${match['creatorEmail']} \nParticipants: ${participants.map((participant) {
-                      if (participant is Map<String, dynamic>) {
-                        return participant['name'];
-                      }
-                      return 'Unknown';
-                    }).join(', ')}'),
-                    trailing: Wrap(
-                      spacing: 8,
-                      children: <Widget>[
-                        ElevatedButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => MatchDetailsScreen(
-                                      matchId: match.id,
-                                      place: match['place'],
-                                      date: match['date'],
-                                      time: match['time'],
-                                      matchType: match['matchType'],
-                                      gender: match['gender'],
-                                      creatorEmail: match['creatorEmail'],
-                                    )),
-                          ),
-                          child: Text('View Details'),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          match['place'],
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                        ElevatedButton(
-                          onPressed: participants.length < 4
-                              ? () => _joinMatch(match.id, participants)
-                              : null,
-                          child: Text(
-                              participants.length < 4 ? 'Join Match' : 'Full'),
+                        SizedBox(height: 8),
+                        Text('Date: ${match['date']}'),
+                        Text('Time: ${match['time']}'),
+                        Text('Type: ${match['matchType']}'),
+                        Text('Gender: ${match['gender']}'),
+                        Text('Created by: ${match['creatorEmail']}'),
+                        Text('Participants: ${participants.map((participant) {
+                          if (participant is Map<String, dynamic>) {
+                            return participant['name'];
+                          }
+                          return 'Unknown';
+                        }).join(', ')}'),
+                        SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MatchDetailsScreen(
+                                    matchId: match.id,
+                                    place: match['place'],
+                                    date: match['date'],
+                                    time: match['time'],
+                                    matchType: match['matchType'],
+                                    gender: match['gender'],
+                                    creatorEmail: match['creatorEmail'],
+                                  ),
+                                ),
+                              ),
+                              child: Text('View Details'),
+                            ),
+                            ElevatedButton(
+                              onPressed: participants.length < 4
+                                  ? () => _joinMatch(match.id, participants)
+                                  : null,
+                              child: Text(participants.length < 4
+                                  ? 'Join Match'
+                                  : 'Full'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                User? currentUser =
+                                    FirebaseAuth.instance.currentUser;
+                                if (currentUser != null &&
+                                    currentUser.email !=
+                                        match['creatorEmail']) {
+                                  _leaveMatch(match.id, participants);
+                                }
+                              },
+                              child: Text('Leave Match'),
+                            ),
+                          ],
                         ),
                       ],
                     ),

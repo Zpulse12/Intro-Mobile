@@ -75,7 +75,7 @@ Future<void> bookCourt(
 
       await _firestore.collection('bookings').add({
         'userId': user.uid,
-        'userName': user.displayName ?? 'Unknown User',
+        'userEmail': user.email ?? 'unknown',
         'date': selectedDate,
         'startTime': startTime,
         'endTime': endTime,

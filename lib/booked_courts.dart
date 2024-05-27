@@ -1,4 +1,3 @@
-// booked_courts.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +19,7 @@ class _BookedCourtsScreenState extends State<BookedCourtsScreen> {
 
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('bookings')
-        .where('userId', isEqualTo: user.uid)
+        .where('userEmail', isEqualTo: user.email)
         .where('isMatch', isEqualTo: false)
         .orderBy('date', descending: true)
         .get();
