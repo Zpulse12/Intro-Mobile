@@ -55,6 +55,8 @@ class MapScreen extends StatelessWidget {
                 Text(location.address),
                 const SizedBox(height: 8),
                 Text('Price: \$${location.price}'),
+                const SizedBox(height: 8),
+                Text('Open from 9am until 21:30pm')
               ],
             ),
           ),
