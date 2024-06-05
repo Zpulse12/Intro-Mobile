@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/book_court.dart';
 import 'package:flutter_project/search_court.dart';
-import 'package:flutter_project/all_matches_screen.dart'; 
-import 'package:flutter_project/account_page.dart'; 
-
+import 'package:flutter_project/all_matches_screen.dart';
+import 'package:flutter_project/account_page.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
