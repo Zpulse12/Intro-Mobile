@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_project/book_court.dart';
 import 'package:flutter_project/search_court.dart';
-import 'package:flutter_project/all_matches_screen.dart'; 
-import 'package:flutter_project/account_page.dart'; 
-
+import 'package:flutter_project/all_matches_screen.dart';
+import 'package:flutter_project/account_page.dart';
+import 'package:flutter_project/map.dart';  // Voeg deze import toe
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -73,6 +72,7 @@ class HomeScreen extends StatelessWidget {
                     'If you are looking for players at your level'),
                 _buildCard(context, 'Classes', Icons.class_, ''),
                 _buildCard(context, 'Competitions', Icons.emoji_events, ''),
+                _buildCard(context, 'Find Courts on Map', Icons.map, ''),  // Voeg deze kaart toe
               ],
             ),
           ),
@@ -122,6 +122,11 @@ class HomeScreen extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => AllMatchesScreen()),
+            );
+          } else if (title == 'Find Courts on Map') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MapScreen()),  // Voeg deze navigatie toe
             );
           }
         },
