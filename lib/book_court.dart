@@ -116,6 +116,24 @@ class _BookingScreenState extends State<BookingScreen> {
       }
     }
 
+    if (slot == "09:00" || slot == "09:30") {
+      for (var bookedSlot in bookedSlots) {
+        DateTime bookedStart = format.parse(bookedSlot['startTime']!);
+        if (bookedStart.hour == 10 && bookedStart.minute == 00) {
+          return true;
+        }
+      }
+    }
+
+    if (slot == "09:00") {
+      for (var bookedSlot in bookedSlots) {
+        DateTime bookedStart = format.parse(bookedSlot['startTime']!);
+        if (bookedStart.hour == 9 && bookedStart.minute == 30) {
+          return true;
+        }
+      }
+    }
+
     return false;
   }
 

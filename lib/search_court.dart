@@ -62,18 +62,6 @@ class _SearchCourtScreenState extends State<SearchCourtScreen> {
                     subtitle: Text(location.address),
                     trailing: Text('${location.price} €'),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Wrap(
-                      spacing: 8.0,
-                      children: location.times
-                          .map((time) => Chip(
-                                label: Text(time),
-                                backgroundColor: Colors.blueAccent,
-                              ))
-                          .toList(),
-                    ),
-                  ),
                 ],
               ),
             ),

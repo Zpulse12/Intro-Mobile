@@ -49,6 +49,11 @@ bool _isOverlapping(
   DateTime start = format.parse(startTime);
   DateTime end = format.parse(endTime);
 
+  DateTime now = DateTime.now();
+  if (start.isBefore(now) || end.isBefore(now)) {
+    return false;
+  }
+
   for (var slot in bookedSlots) {
     DateTime bookedStart = format.parse(slot['startTime']!);
     DateTime bookedEnd = format.parse(slot['endTime']!);
